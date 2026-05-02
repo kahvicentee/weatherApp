@@ -12,7 +12,6 @@ export default function LandingPage() {
                     <h1></h1>
 
                     <div id='search'>
-                        
                     </div>
                 </div>
 
