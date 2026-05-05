@@ -1,0 +1,21 @@
+#comp-card {
+    #card {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background-color: var(--gray-dark);
+        padding: 10px;
+        margin: 10px 0px;
+        width: 158px;
+        border-radius: 10px;
+        border: 0.5px var(--gray-) solid;
+
+        .title {
+            font-size: 18px;
+        }
+
+        .info {
+            font-size: 28px;
+        }
+    }
+}
