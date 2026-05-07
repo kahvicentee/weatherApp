@@ -2,20 +2,20 @@
     #card {
         display: flex;
         flex-direction: column;
-        gap: 15px;
-        background-color: var(--gray-dark);
-        padding: 10px;
+        gap: 18px;
+        background-color: var(--elements);
+        padding: 20px 15px;
         margin: 10px 0px;
-        width: 158px;
+        width: 180px;
         border-radius: 10px;
-        border: 0.5px var(--gray-) solid;
+        border: 1px var(--gray-dark) solid;
 
         .title {
-            font-size: 18px;
+            font-size: 20px;
         }
 
         .info {
-            font-size: 28px;
+            font-size: 32px;
         }
     }
 }

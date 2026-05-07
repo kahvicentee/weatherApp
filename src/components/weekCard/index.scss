@@ -3,20 +3,22 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        background-color: var(--gray-dark);
-        width: 90px;
-        gap: 5px;
+        background-color: var(--elements);
+        border: 1px var(--gray-dark) solid;
+        width: 105px;
+        gap: 10px;
         padding: 10px;
         border-radius: 10px;
+        font-size: 20px;
                         
         img {
-            width: 60px;
+            width: 85px;
         }
 
         .max-min {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: 15px;
         }
     }
 }
