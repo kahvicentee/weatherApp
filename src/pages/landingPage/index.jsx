@@ -2,11 +2,18 @@ import './index.scss';
 import Card from '../../components/card';
 import WeekCard from '../../components/weekCard';
 import Column from '../../components/column';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getWeather, searchCities } from '../../services/weatherApi';
 
 export default function LandingPage() {
     const [unitsOpen, setUnitsOpen] = useState(false)
     const [selectOpen, setSelectOpen] = useState(false)
+
+    const [suggestions, setSuggestions] = useState([])
+    const [weather, setWeather] = useState(null)
+    const [loading, setLoading] = useState(false)
+
+    const [city, setCity] = useState("")
 
     async function toggleUnits() {
         setUnitsOpen(!unitsOpen)
@@ -15,6 +22,68 @@ export default function LandingPage() {
     async function toggleSelect() {
         setSelectOpen(!selectOpen)
     }
+
+    async function searchWeather() {
+        if (city.trim() === '') return
+
+        setLoading(true)
+
+        const data = await getWeather(city)
+        setWeather(data)
+        setLoading(false)
+    }
+
+    async function handleSuggestions(value) {
+        setCity(value)
+
+        if(value.length < 2) {
+            setSuggestions([])
+            return
+        }
+
+        const data = await searchCities(value)
+
+        setSuggestions(data)
+    }
+
+    async function getCurrentLocationWeather() {
+        setLoading(true)
+
+        navigator.geolocation.getCurrentPosition (
+            async (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                const data = await getWeather(`${latitude},${longitude}`)
+
+                setWeather(data)
+                setLoading(false)
+            },
+
+            (error) => {
+                console.log(error)
+                setLoading(false)
+            }
+        );
+    }
+
+    useEffect(() => {
+        getCurrentLocationWeather()
+    }, [])
+
+    useEffect(() => {
+        const delay = setTimeout(async () => {
+            if(city.length >=2) {
+                const data = await searchCities(city)
+
+                setSuggestions(data)
+            } else {
+                setSuggestions([])
+            }
+        }, 300);
+
+        return () => clearTimeout(delay)
+    }, [city])
 
     return (
         <div id="landing-page">
@@ -34,10 +103,41 @@ export default function LandingPage() {
                     <div id='search'>
                         <div className='input-wrapper'>
                             <img src="/assets/images/icon-search.svg" alt="" />
-                            <input type="text" placeholder='Search for a place...' />
+                            <input 
+                                type="text" 
+                                placeholder='Search for a place...' 
+                                value={city} 
+                                onChange={(e) => setCity(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        searchWeather()
+                                    }  
+                                }}
+                            />
+
+                            { suggestions.length > 0 &&
+                                <div className='suggestions'>
+                                    {
+                                        suggestions.map(suggestion => (
+                                            <div 
+                                            className='suggestion'
+                                            key={suggestion.id}
+                                            onClick={() => {
+                                                setCity(`${suggestion.name}, ${suggestion.country}`)
+                                                setSuggestions([])
+                                            }}
+                                            >
+                                                <p>{suggestion.name}, {suggestion.region} - {suggestion.country}</p>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            }
                         </div>
 
-                        <button>Search</button>
+                        <button onClick={searchWeather}>
+                            {loading ? 'Loading...' : 'Search'}
+                        </button>
                     </div>
                 </div>
 
@@ -46,76 +146,41 @@ export default function LandingPage() {
                         <div id='today-card'>
                             <div id='place-info'>
                                 <div className='place-info1'>
-                                    <h1>Berlin, Germany</h1>
-                                    <h2>Tuesday, Aug 5, 2026</h2>
+                                    <h1>{weather?.location.name}, {weather?.location.country}</h1>
+                                    <h2>{weather?.location.localtime}</h2>
                                 </div>
 
                                 <div className='place-info2'>
                                     <img src="/assets/images/icon-sunny.webp" alt="" />
-                                    <h1>20°</h1>
+                                    <h1>{weather?.current.temp_c}°</h1>
                                 </div>
                             </div>
                         </div>
 
                         <div id='cards'>
-                            <Card title="Feels Like" info="18°" />
-                            <Card title="Humidity" info="46%" />
-                            <Card title="Wind" info="14 km/h" />
-                            <Card title="Precipitation" info="0 mm" />
+                            <Card title="Feels Like" info={`${weather?.current.feelslike_c}°`} />
+                            <Card title="Humidity" info={`${weather?.current.humidity}`} />
+                            <Card title="Wind" info={`${weather?.current.wind_kph} km/h`} />
+                            <Card title="Precipitation" info={`${weather?.current.precip_mm} mm`} />
                         </div>
 
                         <div id='week'>
                             <h2>Daily forecast</h2>
 
                             <div id='week-cards'>
-                            <WeekCard 
-                                day="Mon"
-                                icon="/assets/images/icon-sunny.webp"
-                                max="30°"
-                                min="14°"
-                            />
-
-                            <WeekCard 
-                                day="Tue"
-                                icon="/assets/images/icon-storm.webp"
-                                max="21°"
-                                min="15°"
-                            />
-
-                            <WeekCard 
-                                day="Wed"
-                                icon="/assets/images/icon-sunny.webp"
-                                max="40°"
-                                min="28°"
-                            />
-
-                            <WeekCard 
-                                day="Thu"
-                                icon="/assets/images/icon-sunny.webp"
-                                max="24°"
-                                min="14°"
-                            />
-
-                            <WeekCard 
-                                day="Fri"
-                                icon="/assets/images/icon-snow.webp"
-                                max="22°"
-                                min="9°"
-                            />
-
-                            <WeekCard 
-                                day="Sat"
-                                icon="/assets/images/icon-fog.webp"
-                                max="29°"
-                                min="17°"
-                            />
-
-                            <WeekCard 
-                                day="Sun"
-                                icon="/assets/images/icon-partly-cloudy.webp"
-                                max="20°"
-                                min="12°"
-                            />
+                                {
+                                    weather?.forecast?.forecastday?.map(day => (
+                                        <WeekCard 
+                                            key={day.date}
+                                            day={new Date(day.date).toLocaleDateString('en-US', {
+                                                weekday: 'short'
+                                            })}
+                                            icon={day.day.condition.icon}
+                                            max={`${day.day.maxtemp_c}°`}
+                                            min={`${day.day.mintemp_c}°`}
+                                        />
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
@@ -145,20 +210,24 @@ export default function LandingPage() {
                         </div>
 
                         <div className='columns'>
-                            <Column image="/assets/images/icon-rain.webp" hour="3 PM" degrees="20°"/>
-                            <Column image="/assets/images/icon-storm.webp" hour="4 PM" degrees="20°"/>
-                            <Column image="/assets/images/icon-sunny.webp" hour="5 PM" degrees="20°"/>
-                            <Column image="/assets/images/icon-rain.webp" hour="6 PM" degrees="19°"/>
-                            <Column image="/assets/images/icon-partly-cloudy.webp" hour="7 PM" degrees="18°"/>
-                            <Column image="/assets/images/icon-snow.webp" hour="8 PM" degrees="18°"/>
-                            <Column image="/assets/images/icon-sunny.webp" hour="9 PM" degrees="17°"/>
-                            <Column image="/assets/images/icon-partly-cloudy.webp" hour="10 PM" degrees="17°"/>
+                            {
+                                weather?.forecast?.forecastday?.[0]?.hour?.map(hour => (
+                                    <Column 
+                                        key={hour.time}
+                                        image={hour.condition.icon}
+                                        hour={new Date(hour.time).toLocaleTimeString('en-US', {
+                                            hour: 'numeric'
+                                        })}
+                                        degrees={`${hour.temp_c}°`}
+                                    />
+                                ))
+                            }
                         </div>
                     </div>
                 </div>
             </main>
             
-            <footer class="attribution">
+            <footer className="attribution">
                 <p>Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>.</p>
                 <p>Coded by <a href="https://github.com/kahvicentee" target="_blank">Karina Vicente</a>.</p>
             </footer>
