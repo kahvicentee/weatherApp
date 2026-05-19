@@ -43,6 +43,29 @@
         }
     }
 
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    #loading-screen {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: 80px;
+            animation: spin 1s linear infinite;
+        }
+    }
+
     main {
         display: flex;
         flex-direction: column;
@@ -82,6 +105,28 @@
                     background-color: var(--elements);
                     padding: 15px 15px;
                     border-radius: 10px;
+                    position: relative;
+
+                    .suggestions {
+                        position: absolute;
+                        width: 510px;
+                        background-color: var(--elements);
+                        padding: 5px;
+                        border-radius: 10px;
+                        top: 55px;
+                        left: 0px;
+                        z-index: 1000;
+
+                        .suggestion {
+                            border-radius: 10px;
+                            padding: 5px;
+                        }
+
+                        .suggestion:hover {
+                            background-color: var(--gray-dark);
+                            cursor: pointer;
+                        }
+                    }
 
                     img {
                         opacity: 0.7;
@@ -135,6 +180,17 @@
                         align-items: center;
                         padding: 0px 20px;
 
+                        .place-info1 {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 5px;
+
+                            h2 {
+                                font-size: 20px;
+                                font-weight: 500;
+                            }
+                        }
+
                         .place-info2 {
                             display: flex;
                             align-items: center;
@@ -175,7 +231,6 @@
 
         #info-2 {
             width: 100%;
-            max-height: 635px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -187,6 +242,21 @@
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
+                max-height: 535px;
+                overflow-y: auto;
+            }
+
+            .columns::-webkit-scrollbar {
+                width: 10px;
+            }
+
+            .columns::-webkit-scrollbar-track {
+                background-color: transparent;
+            }   
+
+            .columns::-webkit-scrollbar-thumb {
+                background-color: var(--gray-dark);
+                border-radius: 100px;
             }
 
             .hourly {
@@ -242,6 +312,7 @@
                 }
             }
         }
+
     }
 
     .attribution {
@@ -281,7 +352,7 @@
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 815px) {
     #landing-page {
         main {
             #title {
@@ -290,8 +361,15 @@
                 }
 
                 #search {
+                    gap: 5px;
+
                     .input-wrapper {
                         width: 350px;
+
+                        .suggestions {
+                            width: 350px;
+                            text-align: start;
+                        }
                     }
                 }
             }
@@ -300,6 +378,18 @@
                 #info-1 {
                     #today-card {
                         max-width: 500px;
+
+                        #place-info {
+                            .place-info2 {
+                                img {
+                                    width: 200px;
+                                }
+
+                                h1 {
+                                    font-size: 70px;
+                                }
+                            }
+                        }
                     }
 
                     #cards {
@@ -311,7 +401,8 @@
                         #week-cards {
                             display: grid;
                             grid-template-columns: 1fr 1fr 1fr 1fr;
-                            gap: 25px;
+                            align-items: center;
+                            gap: 15px;
                         }
                     }
                 }
