@@ -7,6 +7,10 @@ import { getWeather, searchCities } from '../../services/weatherApi';
 
 export default function LandingPage() {
     const [unitsOpen, setUnitsOpen] = useState(false)
+    const [temperatureUnit, setTemperatureUnit] = useState('c')
+    const [windUnit, setWindUnit] = useState('kph')
+    const [precipitationUnit, setPrecipitationUnit] = useState('mm')
+
     const [selectOpen, setSelectOpen] = useState(false)
     const [selectedDay, setSelectedDay] = useState(0)
 
@@ -22,6 +26,24 @@ export default function LandingPage() {
 
     function toggleSelect() {
         setSelectOpen(!selectOpen)
+    }
+
+    function getTemperature(celsius, fahrenheit) {
+        return temperatureUnit === 'c'
+            ? `${Math.round(celsius)}°`
+            : `${Math.round(fahrenheit)}°`
+    }
+
+    function getWind(kph, mph) {
+        return windUnit === 'kph'
+            ? `${Math.round(kph)} km/h`
+            : `${Math.round(mph)} mph`
+    }
+
+    function getPrecipitation(mm, inches) {
+        return precipitationUnit === 'mm'
+            ? `${Math.round(mm)} mm`
+            : `${Math.round(inches)} in`
     }
 
     async function searchWeather() {
@@ -73,34 +95,34 @@ export default function LandingPage() {
         const text = condition.toLowerCase()
 
         if (text.includes('sun') || text.includes('clear')) {
-            return '/assets/images/icon-sunny.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-sunny.webp`
         }
 
         if (text.includes('partly cloudy')) {
-            return '/assets/images/icon-partly-cloudy.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-partly-cloudy.webp`
         }
 
         if (text.includes('cloud') || text.includes('overcast')) {
-            return '/assets/images/icon-overcast.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-overcast.webp`
         }
 
         if(text.includes('rain') || text.includes('drizzle')) {
-            return '/assets/images/icon-rain.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-rain.webp`
         }
 
         if (text.includes('snow') || text.includes('ice')) {
-            return '/assets/images/icon-snow.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-snow.webp`
         }
 
         if (text.includes('thunder')) {
-            return '/assets/images/icon-storm.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-storm.webp`
         }
 
         if (text.includes('fog') || text.includes('mist')) {
-            return '/assets/images/icon-fog.webp'
+            return `${process.env.PUBLIC_URL}/assets/images/icon-fog.webp`
         }
 
-        return '/assets/images/icon-sunny.webp'
+        return `${process.env.PUBLIC_URL}/assets/images/icon-sunny.webp`
     }
 
     useEffect(() => {
@@ -124,18 +146,80 @@ export default function LandingPage() {
     return (
         <div id="landing-page">
             <header id="header">
-                <img src="/assets/images/logo.svg" alt="" />
+                <img src={`${process.env.PUBLIC_URL}/assets/images/logo.svg`} alt="" />
                 <div id='button'>
-                    <img src="/assets/images/icon-units.svg" alt="" />
+                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-units.svg`} alt="" />
                     <p>Units</p>
-                    <img src="/assets/images/icon-dropdown.svg" alt="" className='arrow' onClick={toggleUnits}/>
+                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-dropdown.svg`} alt="" className='arrow' onClick={toggleUnits}/>
+
+                    { unitsOpen &&
+                        <div className='units'>
+                            <h3>Switch to Imperial</h3>
+                            <p className='units-title'>Temperature</p>
+                            <div 
+                                className={`units-option ${temperatureUnit === 'c' ? 'active' : ''}`}
+                                onClick={() => setTemperatureUnit('c')}
+                            >
+                                <p>Celsius (°C)</p>
+                                {
+                                    temperatureUnit === 'c' && 
+                                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-checkmark.svg`} alt="" />
+                                }
+                            </div>
+                            <div 
+                                className={`units-option ${temperatureUnit === 'f' ? 'active' : ''}`}
+                                onClick={() => setTemperatureUnit('f')}
+                            >
+                                <p>Fahrenheit (°F)</p>
+                                {
+                                    temperatureUnit === 'f' &&
+                                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-checkmark.svg`} alt="" />
+                                }
+                            </div>
+                            <div className='line'></div>
+
+                            <p className='units-title'>Wind Speed</p>
+                            <div 
+                                className={`units-option ${windUnit === 'kph' ? 'active' : ''}`}
+                                onClick={() => setWindUnit('kph')}
+                            >
+                                <p>km/h</p>
+                                {
+                                    windUnit === 'kph' &&
+                                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-checkmark.svg`} alt="" /> 
+                                }
+                            </div>
+                            <div 
+                                className={`units-option ${windUnit === 'mph' ? 'active' : ''}`}
+                                onClick={() => setWindUnit('mph')}    
+                            >
+                                <p>mph</p>
+                                {
+                                    windUnit === 'mph' &&
+                                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-checkmark.svg`} alt="" />
+                                }
+                            </div>
+                            <div className='line'></div>
+
+                            <p className='units-title'>Precipitation</p>
+                            <div 
+                                className={`units-option ${precipitationUnit === 'mm' ? 'active' : ''}`}
+                            >
+                                <p>Milimeters (mm)</p>
+                                {
+                                    precipitationUnit === 'mm' &&
+                                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-checkmark.svg`} alt="" />
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
             </header>
 
             {
             loading && !weather ? (
                 <div id='loading-screen'>
-                    <img src="/assets/images/icon-loading.svg" alt="Loading..." />
+                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-loading.svg`} alt="Loading..." />
                 </div>
             ) : (
                 <main>
@@ -144,7 +228,7 @@ export default function LandingPage() {
 
                         <div id='search'>
                             <div className='input-wrapper'>
-                                <img src="/assets/images/icon-search.svg" alt="" />
+                                <img src={`${process.env.PUBLIC_URL}/assets/images/icon-search.svg`} alt="" />
                                 <input 
                                     type="text" 
                                     placeholder='Search for a place...' 
@@ -199,16 +283,42 @@ export default function LandingPage() {
 
                                     <div className='place-info2'>
                                         <img src={getWeatherIcon(weather?.current?.condition?.text || '')} alt="" />
-                                        <h1>{Math.round(weather?.current.temp_c)}°</h1>
+                                        <h1>
+                                            {getTemperature(
+                                                weather?.current?.temp_c,
+                                                weather?.current?.temp_f
+                                            )}
+                                        </h1>
                                     </div>
                                 </div>
                             </div>
 
                             <div id='cards'>
-                                <Card title="Feels Like" info={`${Math.round(weather?.current.feelslike_c)}°`} />
-                                <Card title="Humidity" info={`${Math.round(weather?.current.humidity)}%`} />
-                                <Card title="Wind" info={`${Math.round(weather?.current.wind_kph)} km/h`} />
-                                <Card title="Precipitation" info={`${Math.round(weather?.current.precip_mm)} mm`} />
+                                <Card 
+                                    title="Feels Like" 
+                                    info={getTemperature(
+                                        weather?.current?.feelslike_c,
+                                        weather?.current?.feelslike_f
+                                    )} 
+                                />
+                                <Card 
+                                    title="Humidity" 
+                                    info={`${Math.round(weather?.current.humidity)}%`} 
+                                />
+                                <Card 
+                                    title="Wind" 
+                                    info={getWind(
+                                        weather?.current?.wind_kph,
+                                        weather?.current?.wind_mph
+                                    )} 
+                                />
+                                <Card 
+                                    title="Precipitation" 
+                                    info={getPrecipitation(
+                                        weather?.current?.precip_mm,
+                                        weather?.current?.precip_in
+                                    )} 
+                                />
                             </div>
 
                             <div id='week'>
@@ -249,7 +359,7 @@ export default function LandingPage() {
                                             }
                                         </p>
 
-                                        <img src="/assets/images/icon-dropdown.svg" alt="" />
+                                        <img src={`${process.env.PUBLIC_URL}/assets/images/icon-dropdown.svg`} alt="" />
                                     </div>
                                     
                                     {selectOpen &&
@@ -285,7 +395,7 @@ export default function LandingPage() {
                                             hour={new Date(hour.time).toLocaleTimeString('en-US', {
                                                 hour: 'numeric'
                                             })}
-                                            degrees={`${Math.round(hour.temp_c)}°`}
+                                            degrees={getTemperature(hour.temp_c, hour.temp_f)}
                                         />
                                     ))
                                 }

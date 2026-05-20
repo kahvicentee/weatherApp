@@ -5,7 +5,7 @@ export default function Navigation() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LandingPage/>} />
+                <Route path="/weatherApp" element={<LandingPage/>} />
             </Routes>
         </BrowserRouter>
     )
