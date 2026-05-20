@@ -3,9 +3,9 @@ import LandingPage from "./pages/landingPage";
 
 export default function Navigation() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/weatherApp">
             <Routes>
-                <Route path="/weatherApp" element={<LandingPage/>} />
+                <Route path="/" element={<LandingPage/>} />
             </Routes>
         </BrowserRouter>
     )
