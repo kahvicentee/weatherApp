@@ -115,6 +115,19 @@
         }
     }
 
+    #not-found {
+        width: 100%;
+        height: 60vh;
+        display: flex;
+        justify-content: center;
+        padding-top: 15px;
+
+        h2 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+    }
+
     main {
         display: flex;
         flex-direction: column;
@@ -573,6 +586,14 @@
             }
         }
 
+        #not-found {
+            text-align: center;
+
+            h2 {
+                font-size: 24px;
+            }
+        }
+
         main {
             #title {
                 h1 {
@@ -631,14 +652,6 @@
                     #week {
                         #week-cards {
                             grid-template-columns: 1fr 1fr 1fr;
-                        }
-                    }
-                }
-
-                #info-2 {
-                    .hourly {
-                        #hourly-select {
-                            
                         }
                     }
                 }

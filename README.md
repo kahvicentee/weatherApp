@@ -6,7 +6,7 @@
 🚀 Challenge by [Frontend Mentor](https://www.frontendmentor.io?ref=challenges) <br>
 👩🏻‍💻 Coded by [Karina Vicente](https://github.com/kahvicentee) <br>
 🌐 Here you can see this [Project](https://kahvicentee.github.io/weatherApp/) <br>
-📅 Completed on May 20th 2026
+📅 Completed on May 21th 2026
 
 ## 🔧 Built with
 - React

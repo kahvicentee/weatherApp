@@ -17,7 +17,7 @@ export default function LandingPage() {
     const [suggestions, setSuggestions] = useState([])
     const [weather, setWeather] = useState(null)
     const [loading, setLoading] = useState(false)
-
+    const [notFound, setNotFound] = useState(false)
     const [city, setCity] = useState("")
 
     function toggleUnits() {
@@ -49,12 +49,28 @@ export default function LandingPage() {
     async function searchWeather() {
         if (city.trim() === '') return
 
-        setLoading(true)
+        try {
+            setLoading(true)
+            setNotFound(false)
 
-        const data = await getWeather(city)
-        setWeather(data)
-        setLoading(false)
-        setSuggestions([])
+            const data = await getWeather(city)
+
+            if (!data || data.error) {
+                setWeather(null)
+                setNotFound(true)
+                return
+            }
+
+            setWeather(data)
+            setSuggestions([])
+        } catch (err) {
+            console.log(err)
+
+            setWeather(null)
+            setNotFound(true)
+        } finally {
+            setLoading(false)
+        }
     }
 
     async function handleSuggestions(value) {
@@ -86,6 +102,8 @@ export default function LandingPage() {
 
             (error) => {
                 console.log(error)
+                setNotFound(true)
+                setWeather(null)
                 setLoading(false)
             }
         );
@@ -219,7 +237,7 @@ export default function LandingPage() {
             </header>
 
             {
-            loading && !weather ? (
+            loading ? (
                 <div id='loading-screen'>
                     <img src={`${process.env.PUBLIC_URL}/assets/images/icon-loading.svg`} alt="Loading..." />
                 </div>
@@ -269,141 +287,149 @@ export default function LandingPage() {
                         </div>
                     </div>
 
-                    <div id="info">
-                        <div id='info-1'>
-                            <div id='today-card'>
-                                <div id='place-info'>
-                                    <div className='place-info1'>
-                                        <h1>{weather?.location.name}, {weather?.location.country}</h1>
-                                        <h2>{new Date(weather?.location?.localtime).toLocaleDateString('en-US', {
-                                            weekday: 'long',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            year: 'numeric'
-                                        })}</h2>
+                    {
+                        notFound ? (
+                            <div id='not-found'>
+                                <h2>No search result found!</h2>
+                            </div>
+                        ) : (
+                            <div id="info">
+                                <div id='info-1'>
+                                    <div id='today-card'>
+                                        <div id='place-info'>
+                                            <div className='place-info1'>
+                                                <h1>{weather?.location.name}, {weather?.location.country}</h1>
+                                                <h2>{new Date(weather?.location?.localtime).toLocaleDateString('en-US', {
+                                                    weekday: 'long',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}</h2>
+                                            </div>
+
+                                            <div className='place-info2'>
+                                                <img src={getWeatherIcon(weather?.current?.condition?.text || '')} alt="" />
+                                                <h1>
+                                                    {getTemperature(
+                                                        weather?.current?.temp_c,
+                                                        weather?.current?.temp_f
+                                                    )}
+                                                </h1>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className='place-info2'>
-                                        <img src={getWeatherIcon(weather?.current?.condition?.text || '')} alt="" />
-                                        <h1>
-                                            {getTemperature(
-                                                weather?.current?.temp_c,
-                                                weather?.current?.temp_f
-                                            )}
-                                        </h1>
+                                    <div id='cards'>
+                                        <Card 
+                                            title="Feels Like" 
+                                            info={getTemperature(
+                                                weather?.current?.feelslike_c,
+                                                weather?.current?.feelslike_f
+                                            )} 
+                                        />
+                                        <Card 
+                                            title="Humidity" 
+                                            info={`${Math.round(weather?.current.humidity)}%`} 
+                                        />
+                                        <Card 
+                                            title="Wind" 
+                                            info={getWind(
+                                                weather?.current?.wind_kph,
+                                                weather?.current?.wind_mph
+                                            )} 
+                                        />
+                                        <Card 
+                                            title="Precipitation" 
+                                            info={getPrecipitation(
+                                                weather?.current?.precip_mm,
+                                                weather?.current?.precip_in
+                                            )} 
+                                        />
                                     </div>
-                                </div>
-                            </div>
 
-                            <div id='cards'>
-                                <Card 
-                                    title="Feels Like" 
-                                    info={getTemperature(
-                                        weather?.current?.feelslike_c,
-                                        weather?.current?.feelslike_f
-                                    )} 
-                                />
-                                <Card 
-                                    title="Humidity" 
-                                    info={`${Math.round(weather?.current.humidity)}%`} 
-                                />
-                                <Card 
-                                    title="Wind" 
-                                    info={getWind(
-                                        weather?.current?.wind_kph,
-                                        weather?.current?.wind_mph
-                                    )} 
-                                />
-                                <Card 
-                                    title="Precipitation" 
-                                    info={getPrecipitation(
-                                        weather?.current?.precip_mm,
-                                        weather?.current?.precip_in
-                                    )} 
-                                />
-                            </div>
+                                    <div id='week'>
+                                        <h2>Daily forecast</h2>
 
-                            <div id='week'>
-                                <h2>Daily forecast</h2>
-
-                                <div id='week-cards'>
-                                    {
-                                        weather?.forecast?.forecastday?.map(day => (
-                                            <WeekCard 
-                                                key={day.date}
-                                                day={new Date(day.date).toLocaleDateString('en-US', {
-                                                    weekday: 'short'
-                                                })}
-                                                icon={getWeatherIcon(day.day.condition.text)}
-                                                max={`${Math.round(day.day.maxtemp_c)}°`}
-                                                min={`${Math.round(day.day.mintemp_c)}°`}
-                                            />
-                                        ))
-                                    }
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id='info-2'>
-                            <div className='hourly'>
-                                <h3>Hourly forecast</h3>
-                                
-                                <div id='hourly-select'>
-                                    <div className='select' onClick={toggleSelect}>
-                                        <p>
+                                        <div id='week-cards'>
                                             {
-                                                weather?.forecast?.forecastday?.[selectedDay] &&
-                                                new Date(
-                                                    weather.forecast.forecastday[selectedDay].date
-                                                ).toLocaleDateString('en-US', {
-                                                    weekday: 'long'
-                                                })
-                                            }
-                                        </p>
-
-                                        <img src={`${process.env.PUBLIC_URL}/assets/images/icon-dropdown.svg`} alt="" />
-                                    </div>
-                                    
-                                    {selectOpen &&
-                                        <div className='options'>
-                                            {
-                                                weather?.forecast?.forecastday?.map((day, index) => (
-                                                    <p
+                                                weather?.forecast?.forecastday?.map(day => (
+                                                    <WeekCard 
                                                         key={day.date}
-                                                        onClick={() => {
-                                                            setSelectedDay(index)
-                                                            setSelectOpen(false)
-                                                        }}
-                                                    >
-                                                        {
-                                                            new Date(day.date).toLocaleDateString('en-US', {
-                                                                weekday: 'long'  
-                                                            })
-                                                        }
-                                                    </p>
+                                                        day={new Date(day.date).toLocaleDateString('en-US', {
+                                                            weekday: 'short'
+                                                        })}
+                                                        icon={getWeatherIcon(day.day.condition.text)}
+                                                        max={`${Math.round(day.day.maxtemp_c)}°`}
+                                                        min={`${Math.round(day.day.mintemp_c)}°`}
+                                                    />
                                                 ))
                                             }
                                         </div>
-                                    }
+                                    </div>
+                                </div>
+
+                                <div id='info-2'>
+                                    <div className='hourly'>
+                                        <h3>Hourly forecast</h3>
+                                        
+                                        <div id='hourly-select'>
+                                            <div className='select' onClick={toggleSelect}>
+                                                <p>
+                                                    {
+                                                        weather?.forecast?.forecastday?.[selectedDay] &&
+                                                        new Date(
+                                                            weather.forecast.forecastday[selectedDay].date
+                                                        ).toLocaleDateString('en-US', {
+                                                            weekday: 'long'
+                                                        })
+                                                    }
+                                                </p>
+
+                                                <img src={`${process.env.PUBLIC_URL}/assets/images/icon-dropdown.svg`} alt="" />
+                                            </div>
+                                            
+                                            {selectOpen &&
+                                                <div className='options'>
+                                                    {
+                                                        weather?.forecast?.forecastday?.map((day, index) => (
+                                                            <p
+                                                                key={day.date}
+                                                                onClick={() => {
+                                                                    setSelectedDay(index)
+                                                                    setSelectOpen(false)
+                                                                }}
+                                                            >
+                                                                {
+                                                                    new Date(day.date).toLocaleDateString('en-US', {
+                                                                        weekday: 'long'  
+                                                                    })
+                                                                }
+                                                            </p>
+                                                        ))
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div className='columns'>
+                                        {
+                                            weather?.forecast?.forecastday?.[selectedDay]?.hour?.map(hour => (
+                                                <Column 
+                                                    key={hour.time}
+                                                    image={getWeatherIcon(hour.condition.text)}
+                                                    hour={new Date(hour.time).toLocaleTimeString('en-US', {
+                                                        hour: 'numeric'
+                                                    })}
+                                                    degrees={getTemperature(hour.temp_c, hour.temp_f)}
+                                                />
+                                            ))
+                                        }
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className='columns'>
-                                {
-                                    weather?.forecast?.forecastday?.[selectedDay]?.hour?.map(hour => (
-                                        <Column 
-                                            key={hour.time}
-                                            image={getWeatherIcon(hour.condition.text)}
-                                            hour={new Date(hour.time).toLocaleTimeString('en-US', {
-                                                hour: 'numeric'
-                                            })}
-                                            degrees={getTemperature(hour.temp_c, hour.temp_f)}
-                                        />
-                                    ))
-                                }
-                            </div>
-                        </div>
-                    </div>
+                        )
+                    }
                 </main>
             )}
             
