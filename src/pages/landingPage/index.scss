@@ -269,6 +269,7 @@
                     h2 {
                         margin-top: 15px;
                     }
+
                     #week-cards {
                         display: flex;
                         gap: 10px;
@@ -346,6 +347,7 @@
                         width: 135px;
                         font-size: 18px;
                         background-color: var(--elements);
+                        box-shadow: 0 1px 5px var(--black);
                         border: 1px var(--gray-dark) solid;
 
                         p {
@@ -401,41 +403,101 @@
     }
 }
 
-@media (max-width: 815px) {
+@media (max-width: 768px) {
     #landing-page {
+        #header {
+            padding: 15px 20px;
+
+            img {
+                width: 150px;
+            }
+
+            #button {
+                padding: 10px 12px;
+                font-size: 16px;
+
+                .units {
+                    right: 0;
+                    left: unset;
+                }
+            }
+        }
+
         main {
             #title {
                 h1 {
-                    padding: 10px 15px;
+                    font-size: 64px;
+                    padding: 20px;
                 }
 
                 #search {
-                    gap: 5px;
+                    width: 100%;
+                    padding: 0 20px 30px 20px;
+                    gap: 10px;
 
                     .input-wrapper {
-                        width: 350px;
+                        width: 100%;
+
+                        input {
+                            width: 100%;
+                            font-size: 16px;
+                        }
 
                         .suggestions {
-                            width: 350px;
-                            text-align: start;
+                            width: 100%;
                         }
+                    }
+
+                    button {
+                        min-width: 110px;
                     }
                 }
             }
 
             #info {
+                display: flex;
+                flex-direction: column;
+                gap: 25px;
+                padding: 0 20px;
+
                 #info-1 {
                     #today-card {
-                        max-width: 500px;
+                        height: auto;
+                        min-height: 240px;
+                        padding: 20px;
+                        overflow: hidden;
 
                         #place-info {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 25px;
+                            padding: 0;
+
+                            .place-info1 {
+                                h1 {
+                                    font-size: 42px;
+                                    line-height: 1;
+                                    word-break: break-word;
+                                }
+
+                                h2 {
+                                    font-size: 22px;
+                                    margin-top: 10px;
+                                }
+                            }
+
                             .place-info2 {
+                                width: 100%;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+
                                 img {
-                                    width: 200px;
+                                    width: 130px;
                                 }
 
                                 h1 {
-                                    font-size: 70px;
+                                    font-size: 80px;
                                 }
                             }
                         }
@@ -444,18 +506,56 @@
                     #cards {
                         display: grid;
                         grid-template-columns: 1fr 1fr;
+                        gap: 15px;
+                        margin: 0;
                     }
 
                     #week {
+                        h2 {
+                            margin-bottom: 10px;
+                        }
+
                         #week-cards {
                             display: grid;
-                            grid-template-columns: 1fr 1fr 1fr 1fr;
-                            align-items: center;
-                            gap: 15px;
+                            grid-template-columns: 1fr 1fr 1fr;
+                            gap: 20px;
                         }
                     }
                 }
+
+                #info-2 {
+                    width: 100%;
+                    padding: 15px;
+
+                    .hourly {
+                        gap: 15px;
+
+                        h3 {
+                            font-size: 25px;
+                            line-height: 1.1;
+                        }
+
+                        #hourly-select {
+                            .select {
+                                padding: 10px 14px;
+                                font-size: 16px;
+                            }
+                        }
+                    }
+
+                    .columns {
+                        max-height: 450px;
+                    }
+                }
             }
+        }
+
+        .attribution {
+            flex-direction: column;
+            text-align: center;
+            gap: 5px;
+            padding: 20px;
+            font-size: 20px;
         }
     }
 }
@@ -463,35 +563,93 @@
 @media (max-width: 375px) {
     #landing-page {
         #header {
-            padding: 10px;
+            img {
+                width: 120px;
+            }
+
+            #button {
+                padding: 8px 10px;
+                font-size: 15px;
+            }
         }
 
         main {
             #title {
+                h1 {
+                    font-size: 52px;
+                    padding: 15px;
+                }
+
                 #search {
                     flex-direction: column;
+                    align-items: stretch;
 
                     .input-wrapper {
-                        width: 350px;
+                        width: 100%;
                     }
 
                     button {
-                        width: 340px;
+                        width: 100%;
+                    }
+                }
+            }
+
+            #info {
+                padding: 0 15px;
+
+                #info-1 {
+                    #today-card {
+                        min-height: 260px;
+
+                        #place-info {
+                            .place-info1 {
+                                h1 {
+                                    font-size: 34px;
+                                }
+
+                                h2 {
+                                    font-size: 25px;
+                                }
+                            }
+
+                            .place-info2 {
+                                img {
+                                    width: 90px;
+                                }
+
+                                h1 {
+                                    font-size: 54px;
+                                }
+                            }
+                        }
+                    }
+
+                    #cards {
+                        grid-template-columns: 1fr;
+                    }
+
+                    #week {
+                        #week-cards {
+                            grid-template-columns: 1fr 1fr 1fr;
+                        }
+                    }
+                }
+
+                #info-2 {
+                    .hourly {
+                        #hourly-select {
+                            
+                        }
                     }
                 }
             }
         }
 
-        #info {
-            #info-1 {
-                #today-card {
-                    max-width: 300px;
-                }
-            }
-        }
-
-        footer {
+        .attribution {
             flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 5px;
         }
     }
 }

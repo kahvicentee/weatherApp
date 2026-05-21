@@ -147,10 +147,12 @@ export default function LandingPage() {
         <div id="landing-page">
             <header id="header">
                 <img src={`${process.env.PUBLIC_URL}/assets/images/logo.svg`} alt="" />
-                <div id='button'>
+                <div id='button'
+                    onClick={toggleUnits}
+                >
                     <img src={`${process.env.PUBLIC_URL}/assets/images/icon-units.svg`} alt="" />
                     <p>Units</p>
-                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-dropdown.svg`} alt="" className='arrow' onClick={toggleUnits}/>
+                    <img src={`${process.env.PUBLIC_URL}/assets/images/icon-dropdown.svg`} alt="" className='arrow'/>
 
                     { unitsOpen &&
                         <div className='units'>
